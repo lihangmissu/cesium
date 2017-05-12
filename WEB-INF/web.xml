@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	version="2.5"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	
+	
+	
+	
+	
+	<servlet>
+
+		<servlet-name>GetCmsStartTimeServlet</servlet-name>
+						
+		<servlet-class>com.power.manage.util.GetCmsStartTimeServlet</servlet-class>
+
+		<load-on-startup>1</load-on-startup>
+
+	</servlet>
+ 
+	<session-config>  
+		<session-timeout>120</session-timeout> 
+	</session-config>  
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
+		<init-param>
+			<param-name>actionPackages</param-name>
+			<param-value>com.sshdemo.web</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping>
+	<filter>
+ 	 	<filter-name>AddHeaderFilter</filter-name>
+  		<filter-class> com.power.web.filter.AddHeaderFilter</filter-class>
+	  	<init-param>
+	  		 <param-name>headers</param-name>
+	   		<param-value>Content-Encoding=gzip</param-value>
+	  	</init-param>
+	 </filter>
+	<filter-mapping>
+			<filter-name>AddHeaderFilter</filter-name>
+			<url-pattern>*.terrain</url-pattern>
+	</filter-mapping>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/classes/applicationContext.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<servlet>
+        <servlet-name>findhabsedataservlet</servlet-name>
+        <servlet-class>com.power.manage.servlet.findhabsedataservlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>findhabsedataservlet</servlet-name>
+        <url-pattern>/findhabsedataservlet</url-pattern>
+    </servlet-mapping>
+     <servlet>
+        <servlet-name>fileUpLoadServlet</servlet-name>
+        <servlet-class>com.power.manage.servlet.ProxyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fileUpLoadServlet</servlet-name>
+        <url-pattern>/fileUpLoadServlet</url-pattern>
+    </servlet-mapping>
+	<mime-mapping>
+        <extension>terrain</extension>
+        <mime-type>application/vnd.quantized-mesh</mime-type>
+    </mime-mapping>
+   <welcome-file-list>
+    <welcome-file>qxgis.html</welcome-file>
+  </welcome-file-list>
+    
+</web-app>
+

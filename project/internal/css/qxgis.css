@@ -1,0 +1,817 @@
+.table{
+ 	border-spacing: 0;
+   	border: solid #ccc 1px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 1px #ccc; 
+    -moz-box-shadow: 0 1px 1px #ccc; 
+    box-shadow: 0 1px 1px #ccc;    
+}
+#loading{
+	display: none;
+}
+.layout {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    width: 20%;
+    height: 20%;
+    z-index: 1001;
+    text-align:center;
+}
+#mask_cover{
+	position: absolute; 
+	left: 0%; 
+	top: 0px; 
+	z-index: 1000; 
+	overflow: hidden;
+ 	-webkit-user-select: none; 
+ 	width: 100%; 
+ 	height: 100%; 
+	background-color:rgba(33, 33, 33, 0.5);
+}
+.table tr,.table td{
+	padding:3px;
+	 border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    width: auto;
+    word-break:keep-all;            
+	white-space:nowrap; 
+}
+#searchContent{
+	width: 100%;
+	position:absolute;
+	max-height: 400px;
+	height: auto;
+	overflow: overlay;
+	padding-left: 2px;
+}
+.searchContentList{
+	width: 99%;
+	position: relative;
+}
+.searchContentList a{
+	width: 100%;
+	height:200%;
+	background-color: rgba(42, 42, 42, 0.7);
+	color:white;
+	font-size:medium;
+	border:solid 1px #444;
+	line-height:200%;
+	display: block;
+	position: relative;
+}
+.searchContentList a:link {
+	color:white;
+	background-color: rgba(42, 42, 42, 0.7);
+}
+.searchContentList a:visited {
+	color:white;
+	background-color: rgba(42, 42, 42, 0.7);
+}
+.searchContentList a:hover {
+	color:white;
+	background-color: #48b;
+}
+.searchContentList a:active {
+	color:red;
+	background-color: #ffff00;
+}
+#animationContainer{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0;
+    width: 169px;
+    height: 112px;
+}
+
+#alarmInfoLeftTable{
+    font-size: small;
+	color:white;
+	width: 100%;
+	height:100%;
+	border-collapse: collapse;
+}
+#alarmInfoLeftTable tr{
+	width:100%;
+}
+#alarmInfoLeftTable th{
+	background: rgba(0, 0, 255, 0.5);
+}
+#alarmInfoLeftTable tr:nth-child(odd){
+	background: white;
+	color: black;
+}
+#alarmInfoLeftTable tr:nth-child(even){
+	background: #c0c0c0;
+	color: black;
+}
+#alarmInfoLeftTable tr:hover{
+	background-color: blue;
+}
+#alarmInfoLeftTable td,#alarmInfoLeftTable th{
+	cursor:pointer;
+	padding:3px;
+    border: 1px solid #ccc;
+    width: auto;
+    word-break:keep-all;
+    text-align: left;
+}
+#alarmInfo{
+	overflow: hidden;
+}
+#alarmInfoLeft{
+	position: absolute;
+	width: 60%;
+	height:96%;
+	overflow: auto;
+}
+#alarmInfoRight{
+	position: absolute;
+	height:96%;
+	left:63%;
+	width: 36%;
+	overflow: auto;
+}
+#alarmInfoRightTable{
+	display:none;
+	font-size: small;
+	color:black;
+	width: 100%;
+	height:100%;
+	border-collapse: collapse;
+}
+#alarmInfoRightTable tr{
+	width:100%;
+}
+#alarmInfoRightTable th{
+	background: rgba(0, 0, 255, 0.5);
+}
+#alarmInfoRightTable tr:nth-child(odd){
+	background: white;
+	color: black;
+}
+#alarmInfoRightTable tr:nth-child(even){
+	background: #c0c0c0;
+	color: black;
+}
+#alarmInfoRightTable tr:hover{
+	background: blue;
+}
+#alarmInfoRightTable tr{
+	background: white;
+}
+#alarmInfoRightTable td,#alarmInfoRightTable th{
+	cursor:pointer;
+	padding:3px;
+    border: 1px solid #ccc;
+    width: auto;
+    word-break:keep-all;
+    text-align: left;
+}
+/*鏃堕棿鎺т欢琚脊鍑烘閬尅*/
+.z-index{
+	position:absolute;
+	z-index:100;	
+}
+.playItem{
+	border-bottom-right-radius:3px;
+	border-bottom-left-radius:3px;
+	border-top-right-radius:3px;
+	border-top-left-radius:3px;
+	border:1px solid #444;
+	height: 1.3em;
+	vertical-align:middle;
+	font-weight:normal;
+	font-size:1.1em;
+	margin-right:.1em;
+	background: #222 url("../../external/css/images/ui-bg_highlight-soft_35_222222_1x100.png") 50% 50% repeat-x;
+	color: #eee;
+}
+#playToolBar{
+	padding: 0px;
+  	display: block;
+  	position: absolute;
+ 	z-index: 20;
+   	left: 40%;
+   	bottom:28px;
+   	height: 4%;
+   	border: none;
+}
+#rightMenu{
+	visibility: hidden;
+	position: absolute;
+	z-index: 10;
+}
+#rightMenu ul li{
+	display: block;
+}
+#timelineContainer{
+	padding: 0px;
+  	display: block;
+  	position: absolute;
+ 	z-index: 20;
+   	bottom:0;
+   	left: 170px;
+   	right:28px;
+   	height: 27px;
+   	border: none;
+}
+#type{
+	display:none;
+	position: absolute;
+	left: 5%;
+	top: 0;
+	color: white;
+	font-size: medium;
+	font-weight: bold;
+	background-color: rgba(108, 108, 108, 1);
+}
+#title{
+	text-align:center;
+	position: absolute;
+	z-index: 20;
+	left: 35%;
+	top: 0%;
+	width: 27%;
+}
+#titleAlarm{
+	position:absolute;
+	width: 100%;
+	height: 50%;
+}
+#titleAlarmTitle{
+	position:absolute;
+	width:100%;
+	height:100%;
+	background-color: rgba(108, 108, 108, 1);
+}
+#titleAlarmTitle img{
+	position:absolute;
+	left:0;
+	width: 7%;
+	height:100%;
+	vertical-align: middle;
+}
+#titleAlarmTitle a{
+	position:absolute;
+	left:7%;
+	text-decoration:none;
+	vertical-align:middle;
+	text-align:center;
+	color: red;
+	font-size: medium;
+	font-weight: bolder;
+}
+#titleAlarmContent{
+	background-color: rgba(108, 108, 108, 1);
+	max-height: 100px;
+	overflow: auto;
+}
+#titleAlarmContentTable{
+	width:98%;
+    font-size: small;
+	display:none;
+	color:white;
+}
+#titleAlarmContentTable td{
+	cursor:pointer;
+	padding:3px;
+    width: auto;
+    word-break:keep-all;
+    text-align: left;
+}
+#titleText{
+	text-align:center;
+	font-size: xx-large;
+	color: white;
+	height: 60%;
+} 
+/* echart閫夋嫨瑕佺礌鐨勫脊绐楁牱寮�*/
+.selectiontitle{
+	width:100%;
+	height:20%;
+	font-size:12px;
+	border-bottom:1px solid white;
+}
+.selectionleft{
+	margin-top:5px;
+	float:left;
+	width:49%;
+	height:76%;
+	overflow:auto;
+	font-size:12px;
+	text-align:center; 
+	border-right:1px solid white;
+}
+.selectionright{
+	margin-top:5px;
+	float:right;
+	width:49%;
+	height:76%;
+	font-size:12px;
+	text-align:center; 
+	overflow:auto;
+}
+.titleinput{
+	width:120px;
+	height:15px;
+	font-size:12px;
+}
+.titlesearch{
+	height:22px;
+	font-size:12px;
+	text-align:center; 
+	float:right;
+}
+.contentdiv{
+	font-size:12px;
+	text-align:left; 
+}
+.contentdiv:hover{
+	background-color: blue;
+	cursor:pointer;
+}
+.selectionrightdiv{
+	font-size:12px;
+	text-align:left; 
+}
+.selectionrightdiv:hover{
+	background-color: blue;
+	cursor:pointer;
+}
+
+/*娉℃场鎻愮ず */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	display: none;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 19px;
+	line-height: 1.4;
+	}
+.leaflet-popup-content span {
+	display: block;
+	}
+.leaflet-popup-tip-container {
+	margin: 0 auto;
+	width: 40px;
+	height: 20px;
+	position: relative;
+	overflow: hidden;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	     -o-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-popup a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px 4px 0 0;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+	background: transparent;
+	}
+.leaflet-popup a.leaflet-popup-close-button:hover {
+	color: #999;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+.leaflet-oldie .leaflet-popup-tip-container {
+	margin-top: -1px;
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+}
+
+.popupImg{
+	width:40px;
+	height: 40px;
+}
+
+/*出力数据展示*/
+.echartDataDiv span{
+	margin-left: 5px;
+}
+.echartDataDiv input{
+	width:130px;
+	height:15px;
+}
+.echartDataDiv select{
+	width:134px;
+	height:20px;
+}
+#powerechart{
+	font-size:12px;
+	display: none;
+}
+.echartDataDiv{
+	width:100%;
+	height:95%;
+	overflow: auto;
+	background-color:black;
+	display: none;
+}
+.close{
+	position:absolute;
+	right: 0;
+	padding: 4px 4px 0 0;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+	background: transparent;
+}
+#echartDataDivChart{
+	width:100%;
+	height:95%;
+	overflow: auto;
+}
+.deviceInfo{
+	width:100%;
+	height:95%;
+	overflow: auto;
+}
+.deviceTable{
+	width:100%;
+	height:100%;
+}
+
+.deviceTable th{
+	width:10%;
+	height:25px;
+	color:#400040;
+	background: #E0ECFF;
+}
+
+.deviceTable tr,.deviceTable td{
+	cursor:pointer;
+	padding:3px;
+	border: 1px solid #ccc;
+    width: auto;
+    word-break:keep-all;
+    text-align: center; 
+    color:#400040;
+}
+
+.deviceTable td{
+	width:10%;
+	height:20px;
+}
+
+.deviceTable tr:nth-child(odd){
+	background: rgb(244,244,244);
+	color: rgb(244,244,244);
+}
+.deviceTable tr:nth-child(even){
+	background: rgb(244,244,244);
+	color: rgb(244,244,244);
+}
+.deviceTable tr:hover{
+	background-color: #E0ECFF;
+}
+/*绾胯矾鍛婅鏌ヨ*/
+#alarmDialog{
+	font-size:12px;
+	display: none;
+}
+.powertitlediv
+{
+	width:100%;
+	height:5%;
+	overflow: hidden;
+}
+.titlediv{
+	width:100%;
+	height:12%;
+	overflow: hidden;
+}
+.timequantumdiv{
+	width: 100%;
+	height:33%;
+}
+.timequantumdiv span{
+	margin-left: 5px;
+}
+.timequantumdiv input{
+	width:130px;
+	height:15px;
+}
+.timequantumdiv select{
+	width:134px;
+	height:20px;
+}
+.timequantumdiv button{
+	right:15px;
+	position:absolute;
+	width:60px;
+}
+
+.publishTimediv{
+	width:100%;
+	height:33%;
+}
+
+.publishTimediv span{
+	margin-left: 5px;
+}
+.publishTimediv input{
+	width:130px;
+	height:15px;
+}
+.publishTimediv select{
+	width:134px;
+	height:20px;
+}
+.publishTimediv button{
+	right:15px;
+	position:absolute;
+	width:60px;
+}
+
+.titletypediv{
+	margin-top:10px;
+	width:100%;
+	height:33%;
+}
+.titletypediv span{
+	margin-left: 5px;
+	vertical-align:middle;
+}
+.titletypediv select{
+	width:134px;
+	height:20px;
+}
+
+.titletypediv input{
+	vertical-align:middle;
+	margin-left:5px;
+}
+
+.alarmResult{
+	width:100%;
+	height:88%;
+	overflow: auto;
+}
+.titleTable{
+	width:100%;
+	height:100%;
+}
+
+.titleTable th{
+	width:10%;
+	height:25px;
+	color:#400040;
+	background: #E0ECFF;
+}
+
+.titleTable tr,.titleTable td{
+	cursor:pointer;
+	padding:3px;
+	border: 1px solid #ccc;
+    width: auto;
+    word-break:keep-all;
+    text-align: center; 
+    color:#400040;
+}
+
+.titleTable td{
+	width:10%;
+	height:20px;
+}
+
+.titleTable tr:nth-child(odd){
+	background: rgb(244,244,244);
+	color: rgb(244,244,244);
+}
+.titleTable tr:nth-child(even){
+	background: rgb(244,244,244);
+	color: rgb(244,244,244);
+}
+.titleTable tr:hover{
+	background-color: #E0ECFF;
+}
+
+/*鍛婅闃堝�璁剧疆*/
+#alarmThresholdSetting{
+	font-size:12px;
+	overflow: hidden;
+	display: none;
+}
+
+.thresholdContainerdiv{
+	width:100%;
+	height:95%;
+	overflow: hidden;
+}
+
+.containerLeftdiv{
+	float:left;
+	width:35%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.containerLeftdiv div{
+	margin-bottom:20px; 
+	vertical-align: left;
+	text-align: center;
+}
+
+.containerLeftdiv input{
+	width:120px;
+	height:15px;
+}
+
+.containerLeftdiv select{
+	width:124px;
+	height: 20px;
+}
+
+.containerCenterdiv{
+	float:left;
+	width:5%;
+	height: 100%;
+}
+
+.containerCenterdiv div{
+	margin-top:150px;
+}
+
+.containerCenterdiv button{
+	margin-top:15px;
+	width:50px;
+}
+
+.containerRightdiv{
+	float:right;
+	width:60%;
+	height: 100%;
+}
+
+.containerRightdiv select{
+	float:right;
+	width:320px;
+	height:180px;
+	margin-top:80px;
+	font-size:12px;
+}
+
+.alarmDetails{
+	width:99%;
+	height:60px;
+	position:relative;
+	margin-top:270px;
+	border: 2px dashed #0000ff;
+}
+
+.thresholdButtondiv{
+	width:100%;
+	height:5%;
+	overflow: hidden;
+}
+
+.thresholdButtondiv button{
+	float:right;
+	width:50px;
+}
+
+/*鍛婅鏄剧ず璁剧疆*/
+#alarmShowSetting{
+	font-size: 12px;
+	overflow: hidden;
+	display: none;
+}
+
+.showContainerdiv{
+	width:100%;
+	height: 95%;
+	overflow: hidden;
+}
+
+.showContainerdiv table{
+	width:100%;
+	margin-top:30px;
+}
+
+.showButtondiv{
+	width:100%;
+	height:5%;
+}
+
+.showButtondiv button{
+	float:right;
+	margin-right: 5px;
+}
+#gradX{
+	position: absolute;
+	z-index: 20;
+	left: 0%;
+	top: 45%;
+	width: 4%;
+	height: 50%;
+	display: none;
+}
+#gradL,#gradR{
+	height: 100%;
+	width: 50%;
+	float: left;
+	color: white;
+	font-size: small;
+}
+
+/*鏁版嵁瀵煎叆寮瑰嚭绐楀彛table鏍峰紡*/
+.importTable{
+	color:#000000;
+}
+.importTable tr{
+	width:100%;
+}
+
+.importTable th{
+	background: #E0ECFF;
+	width:60px;
+}
+
+.importTable tr:nth-child(odd){
+	background: rgb(244,244,244);
+	color: #000000;
+}
+.importTable tr:nth-child(even){
+	background: rgb(244,244,244);
+	color: #000000;
+}
+.importTable tr:hover{
+	background-color: #E0ECFF;
+}
+.importTable td,.importTable th{
+	cursor:pointer;
+	border: 1px solid #ccc;
+    width: auto;
+    word-break:keep-all;
+    text-align: center; 
+}
+
+/*基本信息*/
+#baseInfo{
+	font-size:12px;
+}
+
+#baseInfo table{
+	margin-top:20px;
+}
+
+#baseInfo table td{
+	width: 25%;
+}

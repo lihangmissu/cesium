@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Use correct character set. -->
+<meta charset="utf-8">
+<!-- Tell IE to use the latest, best version. -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<title>全国气象平台!</title>
+<script src="project/external/js/jquery.js"></script>
+<script src="project/external/js/jquery-ui.min.js"></script>
+<script src="project/external/js/jquery.dialogextend.js"></script>
+<script src="Cesium/Cesium.js"></script>
+<script src="project/external/js/extends-jsfunction.js"></script>
+<script src="project/external/js/viewerCesiumNavigationMixin.js"></script>
+<script src="project/external/js/jquery.ztree.core-3.5.js"></script>
+<script src="project/external/js/jquery.ztree.excheck-3.5.js"></script>
+<script src="project/external/js/echarts.min.js"></script>
+<script src="project/external/js/mobiscroll.custom-2.5.2.min.js"></script>
+<script src="project/external/js/mobiscroll.datetime-2.5.1-zh.js"></script>
+<script src="project/external/js/calculate.js"></script>
+<script src="project/internal/Js/Map.js"></script>
+<script src="project/internal/Js/ScollDateTool.js"></script>
+<script src="project/internal/Js/DrawGeometry.js"></script>
+<script src="project/internal/Js/HeatMapTool.js"></script>
+<script src="project/internal/Js/TimelineTool.js"></script>
+<script src="project/internal/Js/MyEcharts.js"></script>
+<script src="project/internal/Js/MenuEvent.js"></script>
+<script src="project/internal/Js/PowerSetting.js"></script>
+<script src="project/internal/Js/Menu.js"></script>
+<script src="project/internal/Js/RightMenuEvent.js"></script>
+<script src="project/internal/Js/RightMenu.js"></script>
+<script src="project/internal/Js/Import.js"></script>
+<script src="project/internal/webgl_Plugins/Vertex.js"></script>
+<script src="project/internal/webgl_Plugins/Triangle.js"></script>
+<script src="project/internal/webgl_Plugins/MultiColorTriangle/MultiColorTriangleGeometry.js"></script>
+<script src="project/internal/webgl_Plugins/MultiColorTriangle/Shaders/MultiColorTriangleAppearanceFS.js"></script>
+<script src="project/internal/webgl_Plugins/MultiColorTriangle/Shaders/MultiColorTriangleAppearanceVS.js"></script>
+<script src="project/internal/webgl_Plugins/MultiColorTriangle/MultiColorTriangleAppearance.js"></script>
+<style>
+@import url(Cesium/Widgets/widgets.css);
+@import url(project/internal/css/qxgis.css);
+@import url(project/external/css/jquery-ui.min.css);
+@import url(project/external/css/zTreeStyle.css);
+@import url(project/external/css/mobiscroll.custom-2.5.2.min.css);
+
+html, body, #cesiumContainer {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+	<div id="cesiumContainer">
+		<div id="trackPopUpContent" class="leaflet-popup" style="z-index: 1001; transform: translate3d(522.469px, 53.7011px, 0px);">
+		  	<a class="leaflet-popup-close-button" href="javascript:void(0)">×</a>
+		  	<div class="leaflet-popup-content-wrapper">
+		    	<div id="trackPopUpLink" class="leaflet-popup-content" style="max-width: 300px;">
+			   	 	<!-- <span>Rockwell Falls, Glacier NP, Montan</span>
+			   	 	<span>Rockwell Falls, Glacier NP, Montan</span>
+			   	 	<span>Rockwell Falls, Glacier NP, Montan</span>
+			   	 	<span>Rockwell Falls, Glacier NP, Montan</span> -->
+	    		</div>
+		  	</div>
+			<div class="leaflet-popup-tip-container">
+	      		<div class="leaflet-popup-tip"></div>
+	    	</div>
+		</div>
+	</div>
+	<div id="type">
+		<div>气象要素:<span></span></div>
+	</div>
+	<div id="loading">
+		<div id="mask_cover"></div>
+		<div class="layout"><img src="project/internal/icon/loading.gif"/></div>
+    </div>
+	<div id="title">
+		<span id="titleText">电力气象GIS</span>
+		<div id="titleAlarm">
+			<div id="titleAlarmTitle">
+				<img alt="预警" src="project/internal/icon/titleAlarm.png"><a href="javascript:void(0)" title="单击查看详情" id="message">全国气象灾害警报与告警信号 正在告警:<span></span>个</a>
+			</div>
+			<div id="titleAlarmContent">
+				<table id="titleAlarmContentTable">
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="gradX">
+		<div id="gradL"></div>
+		<div id="gradR">
+		</div>
+	</div>
+	<div id="timelineContainer"></div>
+	<div id="animationContainer"></div>
+	<div id="baseLayer" class="cesium-baseLayerPicker-dropDown"
+		data-bind="css:{'cesium-baseLayerPicker-dropDown-visible':dropDownVisible}"
+		style="max-height: 550px">
+	</div>
+	<div id="geocoder" class="cesium-viewer-geocoderContainer"></div>
+	<div id="searchContent"></div>
+	<div id="playToolBar">
+	</div>
+	<div id="rightMenu">
+	</div>
+	<div id="baseInfo" title="基本信息">
+		<table class="table">
+			<thead></thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+	<div id="playItem" title="播放设置">
+		<p>
+			发布日期: <input id="datepicker" style="width:200px;">
+		</p>
+		<p>
+			发布时间:<select id="package" style="width:200px;"></select>
+		</p>
+		<p>
+			预报时间:<select id="startTime" style="width:200px;"></select>
+		</p>
+	</div>
+	<div id="alarmInfo">
+		<div id="alarmInfoLeft">
+			<table id="alarmInfoLeftTable">
+				<tbody>
+					<tr>
+						<th style="display: none;">线路id</th>
+						<th>是否显示</th>
+						<th>所属线路</th>
+						<th>预警类型</th>
+						<th>预警等级</th>
+						<th>预警时间</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="alarmInfoRight">
+			<table id="alarmInfoRightTable">
+				<tbody>
+					<tr>
+						<th style="display: none;">数据</th>
+						<th>杆塔编号</th>
+						<th>预警等级</th>
+					</tr>
+				</tbody>
+			</table>			
+		</div>
+	</div>
+	
+	<!--出力数据展示 -->
+	<div id="powerechart">
+		<div class="powertitlediv">
+			<div class="timequantumdiv">
+				<button class="powerDeviceButton">确定</button>
+				<span>省份选择:</span>
+				<select class="province"></select>
+				<span>设备类型:</span>
+				<select class="deviceType"></select>
+				<span>设备名称:</span>
+				<input class="deviceName"></input>
+			</div>
+		</div>
+		<div class = "deviceInfo">
+			<table id="deviceTable" class="deviceTable">
+			<thead></thead>
+			<tbody></tbody>
+			</table>
+		</div>
+		<div id="echartDataDiv" class = "echartDataDiv">
+			<span>开始时间:</span>
+			<input class="startTime" type="text">
+			<span>结束时间:</span>
+			<input class="endTime" type="text">
+			<span>遥测指标:</span><select></select>
+			<button style="right: 50px;position: absolute;">查询</button>
+			<a class="close" href="javascript:void(0)">×</a>
+			<div id="echartDataDivChart">
+				
+			</div>
+		</div>
+	</div>
+	
+	<!--线路告警查詢 -->
+	<div id="alarmDialog">
+		<div class = "titlediv">
+			<div class="timequantumdiv">
+				<span>开始时间:</span>
+				<input class="startTime" type="text">
+				<span>结束时间:</span>
+				<input class="endTime" type="text">
+				<span>线路名称:</span>
+				<select class="lineName"></select>
+				<button class="alarmQuery">确定</button>
+			</div>
+			<div class="titletypediv">
+				<span>告警类型:</span>
+				<select class="alarmType"></select>
+				<span>告警等级:</span>
+				<select class="alarmlevel"></select>
+				<span>告警时间:</span>
+				<select class="alarmTime"></select>
+				<!-- <span>最新:</span>
+				<input id="newradio" class="latestradio" type="radio" name="Fruit">
+				<span>历次:</span>
+				<input id="oldradio" class="latestradio" type="radio" name="Fruit" checked="checked"> -->
+			</div>
+		</div>
+		<div class = "alarmResult">
+			<table id="alarmTable" class="titleTable">
+				<tr>
+					<th>设备编号</th><th>设备名称</th><th>所属线路</th><th>电压等级</th><th>所在省份</th>
+					<th>预警类型</th><th>预警等级</th><th>预警数值</th><th>开始时间</th><th>结束时间</th>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 告警阈值设置 -->
+	<div id="alarmThresholdSetting">
+		<div class="thresholdContainerdiv">
+			<div class="containerLeftdiv">
+				<div style="margin-bottom:40px"></div>
+        		<div>
+	        		<span>告警类型:</span>
+	        		<span><select class="alarmType"></select></span>
+        		</div>
+        		<div>
+	        		<span>告警等级:</span>
+					<span><input class="alarmLevel" type="text"></span>
+        		</div>
+        		<div>
+	        		<span>开始值:&nbsp&nbsp&nbsp</span>
+					<span><input class="startValue" type="text"></span>
+        		</div>
+        		<div>
+	        		<span>结束值:&nbsp&nbsp&nbsp</span>
+					<span><input class="endValue" type="text"></span>
+        		</div>
+        		<div>
+	        		<span>告警颜色:</span>
+					<span><input class="colorText" type="text"></span>
+        		</div>
+        		<div>
+	        		<span>RGB值:&nbsp&nbsp&nbsp</span>
+					<span><input class="RValue" type="text" style="width:31px;">,</span>
+					<span><input class="GValue" type="text" style="width:31px;">,</span>
+					<span><input class="BValue" type="text" style="width:31px;"></span>
+        		</div>
+        		<div>
+        			<span style="color:red;">注：RGB值填写请根据自定义告警颜色参考RGB颜色对照表查找对应的数值.</span>
+        		</div>
+			</div>
+			<div class="containerCenterdiv">
+				<div>
+					<button class="addButton">添加 </button>
+					<button class="delButton">删除</button>
+				</div>
+			</div>
+			<div class="containerRightdiv">
+				<select id="aaa" class="alarmThreshold" multiple="true";></select>
+				<div class="alarmDetails"></div>
+			</div>
+		</div>
+		<div class="thresholdButtondiv">
+			<button class="okButton">确定</button>
+		</div>
+	</div>
+	<!-- 告警显示设置 -->
+	<div id="alarmShowSetting">
+		<div class="showContainerdiv">
+			<table></table>
+		</div>
+		<div class="showButtondiv">
+			<button class="btnPitchOn">确定</button>
+			<button class="btnNotAllChoice">全不选</button>
+			<button class="btnAllChoice">全选</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+	//基本信息弹框初始化
+		$("#baseInfo").dialog({
+			autoOpen : false,
+			title:"基本信息",
+			position :{
+				my : "center",
+				at : "center",
+				of : "#cesiumContainer"
+			},
+			width:600,
+			height:450,
+			zIndex:20
+		}).dialogExtend({
+			"closable" : true,
+			"maximizable" : true,
+			"minimizable" : true,
+			"minimizeLocation" : "left",
+			"collapsable" : true,
+			"dblclick" : "collapse"
+		});
+		var timer;
+		//告警信息弹框初始化
+		$("#alarmInfo").dialog({
+			title:"告警详细信息",
+			autoOpen : false,
+			position :{
+				my : "left top",
+				at : "left bottom",
+				of : "#titleAlarm"
+			},
+			width:800,
+			height:600,
+			zIndex:20
+		}).dialogExtend({
+			"closable" : true,
+			"maximizable" : true,
+			"minimizable" : true,
+			"minimizeLocation" : "left",
+			"collapsable" : true,
+			"dblclick" : "collapse"
+		});
+		function blinklink()
+		{
+			if (!document.getElementById('message').style.color){
+				document.getElementById('message').style.color="red"
+			}
+			if (document.getElementById('message').style.color=="red"){
+				document.getElementById('message').style.color="yellow"
+			}else{
+				document.getElementById('message').style.color="red"
+			}
+		}
+		//告警展示方法
+		function alarm(pack){
+			$("#titleAlarmTitle a").bind("click",function(){
+				if($("#titleAlarmContentTable").css("display") == "none"){
+					clearInterval(timer);
+					document.getElementById('message').style.color="red";
+					$("#titleAlarmContentTable").show();
+				}else{
+					$("#titleAlarmContentTable").hide();
+				}
+			});
+			$.ajax({
+				type : "POST",
+				url : "lineAlarm!findLineAlarmBySql.action",
+				data:{cycle:pack},
+				dataType: "json", 
+				success : function(data){
+					var data=data.list;
+					$("#titleAlarmTitle a span").text(data.length);
+					$("#titleAlarmContentTable tbody").empty();
+					var status=1;  //根据数据状态值，显示闪烁效果(只要数据中存在一条记录的status的值为0就进行闪烁)
+					$.each(data,function(i,n){
+						if(n.status==0){
+							status=0;  //更改闪烁值的状态
+						}
+						var tr="<tr><td style='display:none;'>"+n.lineid+"</td><td>"+n.alarmtime+"</td><td>"+n.linename+"</td><td>"+n.alarminfo+"</td></tr>";
+						$("#titleAlarmContentTable tbody").append(tr);
+					});
+					//判断值的状态进行闪烁
+					if(status==0){
+						timer=setInterval("blinklink()",200);
+					}else{
+						clearInterval(timer);
+					}
+					$("#titleAlarmContentTable tbody tr").bind("click",function(){
+						var lineId=$(this).find("td:first").text();
+						$.ajax({
+							type : "POST",
+							url : "lineAlarm!findAlarmSetByWhereSql.action",
+							data:{cycle:pack,lineid:lineId},
+							dataType: "json", 
+							success : function(data){
+								$("#alarmInfo").dialog("open");
+								$("#alarmInfoRightTable").hide();
+								$("#alarmInfoLeftTable tbody tr:not(:first)").remove();
+								$("#alarmInfoRightTable tbody tr:not(:first)").remove();						
+								var data1=data.list;
+								$.each(data1,function(i,n){
+									var tr="<tr style='height:6%;'><td style='display:none;'>"+n.id+"</td><td><input type='radio' name='isShow'/></td><td>"+n.linename+"</td><td>"+n.type+"</td><td>"+n.alarminfo+"</td><td>"+n.alarmtime+"</td></tr>";
+									$("#alarmInfoLeftTable tbody").append(tr);
+								});
+								if(data1.length<16){
+									for (var int2 = 0; int2 < (16-data1.length); int2++) {
+										var tr="<tr style='height:6%;'><td style='display:none;'></td><td></td><td></td><td></td><td></td><td></td></tr>";
+										$("#alarmInfoLeftTable tbody").append(tr);
+									}
+								}
+								$("#alarmInfoLeftTable tbody tr").bind("click",function(){
+									if($(this).find(":radio").prop("checked")){
+										$("#alarmInfoRightTable tbody tr:not(:first)").remove();
+										for (var int2 = 0; int2 < 16; int2++) {
+											var tr="<tr style='height:6%;'><td style='display:none;'></td><td></td><td></td></tr>";
+											$("#alarmInfoRightTable tbody").append(tr);
+										}
+										$(this).find(":radio").prop("checked",false);
+										drawTool.removePointByPrimitivetypes(["warn","warn_line"]);
+									}else{
+										$(this).find(":radio").prop("checked",true);
+										var id=$(this).find("td:first").text();
+										var lineName=$(this).find("td:eq(2)").text();
+										var time=$(this).find("td:eq(5)").text();
+										var type=$(this).find("td:eq(3)").text();
+										$.ajax({
+											type : "POST",
+											url : "alarmHbase!alarmHbaseByPackageAndIdset.action",
+											data:{packagetime:pack,id:id},
+											dataType: "json", 
+											success : function(data){
+												var data=eval('('+data.alarmInfo+')');
+												if(data.length!=0){
+													$("#alarmInfoRightTable").show();
+													$("#alarmInfoRightTable tbody tr:not(:first)").remove();
+													$.each(data,function(i,n){
+														var tr;
+														if(n.warnLevel==1){
+															tr="<tr style='height:6%;'><td style='display:none;'>"+i+"</td><td>"+n.NAME+"</td><td>红色</td></tr>";
+														}else if(n.warnLevel==2){
+															tr="<tr style='height:6%;'><td style='display:none;'>"+i+"</td><td>"+n.NAME+"</td><td>蓝色</td></tr>";
+														}else{
+															tr="<tr style='height:6%;'><td style='display:none;'>"+i+"</td><td>"+n.NAME+"</td><td>绿色</td></tr>";
+														}
+														$("#alarmInfoRightTable tbody").append(tr);
+													});
+													if(data.length<16){
+														for (var int2 = 0; int2 < (16-data.length); int2++) {
+															var tr="<tr style='height:6%;'><td style='display:none;'></td><td></td><td></td></tr>";
+															$("#alarmInfoRightTable tbody").append(tr);
+														}
+													}
+													drawTool.removePointByPrimitivetypes(["warn","warn_line"]);
+													drawTool.drawBillboardByPrimitive("warn",null,data,type);
+													$("#alarmInfoRightTable tbody tr").bind("click",function(){
+														var int=$(this).find("td:first").text();
+														var list=[];
+														list.push(data[int]);
+														drawTool.removePointByPrimitive(["warn","warn_line"]);
+														drawTool.drawBillboardByPrimitive("warn",null,data,type);
+													});
+												}else{
+													$("#alarmInfoRightTable tbody tr:not(:first)").remove();
+													for (var int2 = 0; int2 < 16; int2++) {
+														var tr="<tr style='height:6%;'><td style='display:none;'></td><td></td><td></td></tr>";
+														$("#alarmInfoRightTable tbody").append(tr);
+													}
+													drawTool.removePointByPrimitivetypes(["warn","warn_line"]);
+													alert("此包内暂无告警，请切换包");
+												}
+												
+											}
+										});
+									}
+								});
+							}
+						});
+					});
+				}
+			});
+		}
+	</script>
+	<script type="text/javascript">
+	//在图层管理中加入图层
+		function addToBaseLayer(layername) {
+			var titleDiv = document.createElement("div");
+			titleDiv.setAttribute("class",
+					"cesium-baseLayerPicker-sectionTitle");
+			titleDiv.innerHTML = layername;
+			var choicesDiv = document.createElement("div");
+			choicesDiv.setAttribute("class", "cesium-baseLayerPicker-choices");
+			var baseLayer = document.getElementById("baseLayer");
+			baseLayer.appendChild(titleDiv);
+			baseLayer.appendChild(choicesDiv);
+			return choicesDiv;
+		};
+		//在图层中加入按钮
+		function addBaseLayerButton(container,options, baseIconUrl,
+				iconOption) {
+			var type=options.type;
+			var name=options.name;
+			var isCheckBox=options.isCheckBox;
+			var itemDiv= document.createElement("div");
+			itemDiv.setAttribute("class","cesium-baseLayerPicker-item");
+			if (isCheckBox) {
+				var label = document.createElement("label");
+				label.setAttribute("class","cesium-baseLayerPicker-itemLabel");
+				label.setAttribute("for",type);
+				var img = document.createElement("img");
+				img.setAttribute("class","cesium-baseLayerPicker-itemIcon");
+				img.setAttribute("src",baseIconUrl+iconOption[type]);
+				var span = document.createElement("span");
+				span.innerHTML = name;
+				label.appendChild(img);
+				label.appendChild(span);
+				var input = document.createElement("input");
+				input.setAttribute("id",type);
+				input.setAttribute("type","checkbox");
+				itemDiv.appendChild(label);
+				itemDiv.appendChild(input);
+				container.appendChild(itemDiv);
+				return input;
+			} else {
+				itemDiv.setAttribute("id",type);
+				var img = document.createElement("img");
+				img.setAttribute("class","cesium-baseLayerPicker-itemIcon");
+				img.setAttribute("src",baseIconUrl+iconOption[type]);
+				var labelDiv = document.createElement("div");
+				labelDiv.setAttribute("class","cesium-baseLayerPicker-itemLabel");
+				labelDiv.innerHTML=name;
+				itemDiv.appendChild(img);
+				itemDiv.appendChild(labelDiv);
+				container.appendChild(itemDiv);
+				return itemDiv;
+			}
+		};
+		//在下方播放条中加入按钮
+		function addToolBarToBottom(container,name,flag){
+			var button=document.createElement("button");
+			button.innerHTML=name;
+			button.setAttribute("class",flag);
+			container.appendChild(button);
+			if(flag=="playItem"){
+				return button;
+			}
+			var icons;
+			switch(flag){
+				case "prev":
+					icons= {
+			 			primary: "ui-icon-seek-start"
+			 		};
+					break;
+				case "play":
+					icons= {
+			    		primary: "ui-icon-play"
+			    	};
+					break;
+				case "reset":
+					icons= {
+			        	primary: "ui-icon-stop"
+			        };
+					break;
+				case "next":
+					icons= {
+			    		primary: "ui-icon-seek-end"
+			    	};
+					break;
+				default:
+					break;
+			}
+			$(button).button({
+				text: false,
+		    	icons: icons
+			});
+			return button;
+		};
+		//在上方工具条中加入按钮
+		function addToViewerToolbar(container,options, baseIconUrl,
+				iconOption) {
+			var type=options.type;
+			var name=options.name;
+			var button=document.createElement("button");
+			button.setAttribute("class","cesium-button cesium-toolbar-button");
+			var img=document.createElement("img");
+			img.setAttribute("draggable","false");
+			img.setAttribute("title",name);
+			img.setAttribute("alt",name);
+			img.setAttribute("class","cesium-baseLayerPicker-selected");
+			img.setAttribute("src",baseIconUrl+iconOption[type]);
+			button.appendChild(img);
+			container.appendChild(button);
+			return button;
+		};
+		//热图所需要的包和包内时间列表
+		var pack,timeList;
+		//最外层命名空间对象,地图对象
+		var map = new Map("cesiumContainer");
+		//地图对象的viewer属性
+		var viewer = map.viewer;
+		//时间轴对象
+		var timelineTool=new Map.TimelineTool("timelineContainer","animationContainer");
+		//新的时间弹出插件
+		var scollDateTool = new Map.ScollDateTool();
+		//绘制点线面的工具对象
+		var drawTool = new Map.DrawGeometry(viewer);
+		//绘制云图的工具对象
+		var heatMapTool=new Map.HeatMapTool(viewer);
+		//菜单对象
+		var menuTools = new Map.Menu();
+		menuTools.menuInit("sysTreeMenu!findAllTree.action","tree");
+		var menuEvent = new Map.MenuEvent();
+		//右键菜单管理对象
+		var rightMenuTools = new Map.RightMenu();
+		rightMenuTools.rightMenuInit(document.getElementById('rightMenu'),"menu");
+		var rightMenuEvent = new Map.RightMenuEvent();
+		//出echart图标对象
+		var echart = new Map.Echart();
+		var powerSetting = new Map.PowerSetting();
+		var importData = new Map.Import();
+		//页面初始化请求气象预测包和包内时间列表
+		$.getJSON("dataPackage!currentPackage.action",function(data){
+			var currentPackage=eval('('+data.currentPackage+')');
+			pack=currentPackage[0]+"";
+			alarm(pack);
+			var onePackagepredictionTimeList=eval('('+data.onePackagepredictionTimeList+')');
+			timeList=onePackagepredictionTimeList;
+			timelineTool.initOrUpdate(timeList[0],timeList[timeList.length-1]);
+			heatMapTool.initPackAndTimeList(pack,timeList);
+			$("#startTime").empty();
+			var day=scollDateTool.formatTime(currentPackage[0]).replace(/-/g,"");
+			$.get("dataPackage!oneDayPackageList.action?day="+day).done(function(data){
+				var currentPackagelist= eval('('+data.oneDayPackageList+')');
+				$("#package").empty();
+    			$.each(currentPackagelist,function(index,value){
+    				var textValue = scollDateTool.formatDateToString(value);
+    				var option="<option value='"+value+"'>"+textValue+"</option>";
+    				$("#package").append(option);
+    			});
+			});
+			$.each(onePackagepredictionTimeList,function(i,j){
+				var option="<option value='"+i+"'>"+scollDateTool.formatDateToString(j)+"</option>";
+				$("#startTime").append(option);
+			});
+			scollDateTool.scollDateInit($("#datepicker"),"date",echart.formatDate(pack),function(dateText,inst){
+				var day = dateText.replace(/-/g,"");
+				$.get("dataPackage!oneDayPackageList.action?day="+day).done(function(data){
+					var currentPackagelist= eval('('+data.oneDayPackageList+')');
+					$("#package").empty();
+	    			$.each(currentPackagelist,function(index,value){
+	    				var textValue = scollDateTool.formatDateToString(value);
+	    				var option="<option value='"+value+"'>"+textValue+"</option>";
+	    				$("#package").append(option);
+	    			});
+	    			$("#startTime").empty();
+	    			if(currentPackagelist.length>0){
+	    				$.get("dataPackage!onePackagepredictionTimeList.action?currentPackage="+currentPackagelist[0]).done(function(data){
+	        				var onePackagepredictionTimeList=eval('('+data.onePackagepredictionTimeList+')');
+	        				$.each(onePackagepredictionTimeList,function(i,j){
+	        					var textValue = scollDateTool.formatDateToString(j);
+	    	    				var option="<option value='"+j+"'>"+textValue+"</option>";
+	        					$("#startTime").append(option);
+	        				});
+	        			});
+	    			}
+				});
+			});
+			$("#package").bind('change',function(){
+				var packageList=$(this).val();
+				$("#startTime").empty();
+				$.get("dataPackage!onePackagepredictionTimeList.action?currentPackage="+packageList).done(function(data){
+					var onePackagepredictionTimeList=eval('('+data.onePackagepredictionTimeList+')');
+					$.each(onePackagepredictionTimeList,function(i,j){
+						var textValue = scollDateTool.formatDateToString(j);
+	    				var option="<option value='"+j+"'>"+textValue+"</option>";
+    					$("#startTime").append(option);
+					});
+				});
+			});
+			var animation=timelineTool.animation;
+			var flag=false;
+			animation.viewModel.pauseViewModel.command.beforeExecute.addEventListener(function(){
+				flag=!flag;
+				if(flag){
+					heatMapTool.webgl_option && $("#loading").show();
+					heatMapTool.webgl_option && heatMapTool.playHeat(function(){
+					});
+				}else{
+					heatMapTool.webgl_option && heatMapTool.stopHeat();
+					heatMapTool.webgl_option && heatMapTool.someHeat(heatMapTool.index,function(){
+						timelineTool.indexSetTime.apply(timelineTool,[heatMapTool.index]);
+					});
+				} 
+			});
+			animation.viewModel.playForwardViewModel .command.beforeExecute.addEventListener(function(){
+				heatMapTool.webgl_option && $("#loading").show();
+				if(heatMapTool.monitorDraw!=-1){
+					heatMapTool.stopHeat();
+					heatMapTool.monitorDraw=0;
+				}
+				heatMapTool.webgl_option && heatMapTool.nextHeat(function(monitorDraw){
+					if(heatMapTool.monitorDraw!=-1){
+						heatMapTool.playFlag=true;
+						heatMapTool.dataFlag=true;
+						heatMapTool.playHeat(function(){
+						});
+					}
+				});
+			});
+			animation.viewModel.playReverseViewModel  .command.beforeExecute.addEventListener(function(){
+				heatMapTool.webgl_option && $("#loading").show();
+				if(heatMapTool.monitorDraw!=-1){
+					heatMapTool.stopHeat();
+					heatMapTool.monitorDraw=0;
+				}
+				heatMapTool.webgl_option && heatMapTool.prevHeat(function(monitorDraw){
+					if(monitorDraw!=-1){
+						heatMapTool.playFlag=true;
+						heatMapTool.dataFlag=true;
+						heatMapTool.playHeat(function(){
+						});
+					}
+				});
+			});
+			/* animation.viewModel.playRealtimeViewModel  .command.beforeExecute.addEventListener(function(){
+				$("#loading").show();
+				if(heatMapTool.monitorDraw!=-1){
+					heatMapTool.stopHeat();
+				}
+				heatMapTool.someHeat(0,function(){
+					timelineTool.indexSetTime.apply(timelineTool,[0]);
+				});
+			}); */
+		});
+		//绘制边界
+		$.getJSON("project/internal/data/json/cn-provences.json",null,function(data){
+			drawTool.drawPolygonByPrimitive("provence",null,data);
+		});
+		//页面绑定默认点击事件
+		map.addEventListener("click");
+		//给图层绑定视野控制事件
+		map.addEventListener("viewerControl",{
+			type:["fengji_model","fengdianchang_model","ganta_model","guangfudianchang_model","obs","heat_map"],
+			height:[50000,50000,10000,50000,2000000,100000],
+			rate:[5,50,50,50]
+		});
+		//在图层中添加按钮
+		map.addToolBar( document.getElementsByClassName("cesium-viewer-toolbar")[0],{type:"measure",name : "测距",callback : addToViewerToolbar},function(options,button,ev){
+			drawTool.drawPolylineByPrimitive(options["type"],null,[{geometry:"0,0,100,1,1,100"}]);
+			drawTool.drawLableByPrimitive(options["type"],{text:"单击开始测距"},[{geometry:"0,0,100"}]);
+			var collection=drawTool[options["type"]];
+			var labelCollection=drawTool[options["type"]+"_label"];
+			map.measure(collection.get(collection.length-1),labelCollection.get(labelCollection.length-1));
+		});
+		//在图层中添加按钮
+		map.addToolBar( document.getElementsByClassName("cesium-viewer-toolbar")[0],{type:"select",name : "单机选中",callback : addToViewerToolbar},function(options,button,ev){
+			var id=(drawTool[options["type"]]?drawTool[options["type"]].length:0)+options["type"];
+	        drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.RED,outlineColor:Cesium.Color.WHITE,outlineWidth:3,pixelSize:7},[{geometry:"0,0",height:100,gisid:id}]);
+	        var collection=drawTool[options["type"]];
+			map.select(collection.get(collection.length-1));
+		});
+		//在图层中添加按钮
+		map.addToolBar( document.getElementsByClassName("cesium-viewer-toolbar")[0],{type:"clear",name : "清除",callback : addToViewerToolbar},function(options,button,ev){
+			map.clear(function(){
+				drawTool.removePointByPrimitivetypes(["measure","measure_label","measure_point","polygon_point","polygon","select","warn","warn_line"]);
+				map.selectedObj && map.selectedObj.attributes && (map.selectedObj.attributes.color = Cesium.ColorGeometryInstanceAttribute.toValue( Cesium.Color.WHITE.withAlpha(0.1)));
+				map.selectedObj=null;
+			});
+		});
+		//页面加入搜索框
+		$(".cesium-viewer-toolbar").prepend($("#geocoder"));
+		var geocoder=new Cesium.Geocoder({
+			container:"geocoder",
+			scene:viewer.scene
+		});
+		$(".cesium-viewer-geocoderContainer").append($("#searchContent"));
+		geocoder.viewModel.search.beforeExecute.addEventListener(function(result){
+			var name=geocoder.viewModel.searchText;
+			if(name==""){
+				$("#searchContent").empty();
+				$("#searchContent").hide();
+				return;
+			}
+			$("#searchContent").empty();
+			var list=[];
+			var searchType=["guangfudianchang","fengdianchang","fengji","ganta","bdz","obs","inverter","windtower","line_35","line_110","line_220","line_500","line_tgy"];
+			for(var i=0;i<searchType.length;i++){
+				//搜索光伏电站
+				if(drawTool[searchType[i]+"_data"]){
+					var patt1=new RegExp(name);
+					var data=drawTool[searchType[i]+"_data"]
+					for (var int = 0; int < data.length; int++) {
+						if(patt1.test(data[int].name)){
+							list.push(data[int]);
+						}
+					}
+				}
+			}
+			map.createList(list);
+		});
+		$("input[type=search]").focus(function(){
+			$("#searchContent").show();
+		});
+		
+		//在图层中添加按钮
+		map.addToolBar( document.getElementsByClassName("cesium-viewer-toolbar")[0],{type:"baselayerbutton",name : "图层管理",callback : addToViewerToolbar},function(options,button,ev){
+			//菜单按钮点击后隐藏弹出图层框
+			var menu = $(".cesium-baseLayerPicker-dropDown");
+			menu.toggleClass("cesium-baseLayerPicker-dropDown-visible");
+		});
+		var imageLayer = addToBaseLayer("影像图");
+		map.addToolBar(imageLayer,{type : "weixing",name : "卫星图",callback : addBaseLayerButton},function(options){
+			viewer.imageryLayers.removeAll();
+			viewer.imageryLayers.addImageryProvider(new Cesium.createOpenStreetMapImageryProvider({
+				url :"http://172.16.33.15/osm_hot/",
+				fileExtension:"png"
+			}));
+		});
+		map.addToolBar(imageLayer,{type : "jiedao",name : "街道图",callback : addBaseLayerButton},function(options){
+			viewer.imageryLayers.removeAll();
+			viewer.imageryLayers.addImageryProvider(new Cesium.createOpenStreetMapImageryProvider({
+				url :"http://172.16.33.15/osm_hot2/",
+				fileExtension:"jpg"
+			}));
+		});
+		/* map.addToolBar(imageLayer,{type : "arcgis",name : "arcgis",callback : addBaseLayerButton},function(options){
+			viewer.imageryLayers.removeAll();
+			viewer.imageryLayers.addImageryProvider(new Cesium.createOpenStreetMapImageryProvider({
+				url :"http://172.16.33.15/acgis/",
+				fileExtension:"jpg"
+			}));
+		});
+		map.addToolBar(imageLayer,{type : "tianditu",name : "天地图",callback : addBaseLayerButton},function(options){
+			viewer.imageryLayers.removeAll();
+			viewer.imageryLayers.addImageryProvider(new Cesium.createOpenStreetMapImageryProvider({
+				url :"http://172.16.33.15/tianditu/",
+				fileExtension:"jpg"
+			}));
+		}); */
+		var featureLayer = addToBaseLayer("气象要素");
+		map.addToolBar(featureLayer,{type : "sun",name : "辐照度",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "temperature",name : "温度",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "wind",name : "大风",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "humid",name : "湿度",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "thunder",name : "雷电",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "pressure",name : "气压",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "height",name : "海拔高度",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "cloudiness",name : "云量",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		map.addToolBar(featureLayer,{type : "ice",name : "覆冰",callback : addBaseLayerButton},function(options){
+			heatMapTool.initHeat.apply(heatMapTool,arguments);
+		});
+		
+		var spatialLayer = addToBaseLayer("空间查询");
+		map.addToolBar(spatialLayer,{type : "polygon",name:"自定义多边形",callback:addBaseLayerButton},function(options){
+			var id=(drawTool[options["type"]]?drawTool[options["type"]].length:0)+"_polygon";
+			drawTool.drawPolygonByChangeablePrimitive(options["type"],null,{id:id});
+			var collection=drawTool[options["type"]];
+			map.polygon(collection.get(collection.length-1));
+		});
+		map.addToolBar(spatialLayer,{type : "provence",name:"省份选中",callback:addBaseLayerButton},function(options){
+			map.provenceSelect();
+		});
+		
+		var deviceLayer = addToBaseLayer("图层控制");
+		map.addToolBar(deviceLayer,{type : "fengdianchang",name : "风电场",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisWindInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.GREEN},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "guangfudianchang",name : "光伏电厂",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPhotovoltaicInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.RED},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "bdz",name : "变电站",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisSubstationInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.BLUE},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "powerplant",name : "电厂",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPowerPlantInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.RED},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		/* map.addToolBar(deviceLayer,{type : "ganta",name : "杆塔",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$.get("pTPole!findAll.action",function(data){
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.PURPLE},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]); */
+		map.addToolBar(deviceLayer,{type : "fengji",name : "风机",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisFanInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.YELLOW},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		
+		map.addToolBar(deviceLayer,{type : "inverter",name : "逆变器",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPvInverterInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.YELLOW},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "windtower",name : "测风塔",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisWindTowerInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.RED},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "weatherstation",name : "气象站",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisWeatherStationInfo!findByWhere.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawPointByPrimitive(options["type"],{color:Cesium.Color.RED},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"],options["type"]+"_label"],options["type"]+"_model");
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "obs",name : "观测站",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("obsStation!findAllProvinceObsStation.action",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool[options["type"]+"_model_data"]=data.list;
+				drawTool[options["type"]+"_label_data"]=data.list;
+				drawTool.drawObservationStationPointByPrimitive(options["type"],{},data.list,1);
+			});
+		},function(options){
+			drawTool.removePointByPrimitivetypes([options["type"]+"_1",options["type"]+"_2",options["type"]+"_3",options["type"]+"_label_1",options["type"]+"_label_2",options["type"]+"_label_3",options["type"]+"_model"]);
+			drawTool[options["type"]+"_data"]=null;
+			drawTool[options["type"]+"_model_data"]=null;
+			drawTool[options["type"]+"_label_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "line_35",name : "输电线35KV",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPtLineInfo!findGisPtLineInfoByVoltagelevel.action?voltagelevel=35",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool.drawPolylineByPrimitive(options["type"],{color:Cesium.Color.fromBytes(255,255,0,255),width:1},data.list);
+			});
+			/* $.get("pTPoles!findPoleByVoletage.action?voletage="+35,function(data){
+				drawTool["ganta_model_35"+"_data"]=data.list;
+			}); */
+		},function(options){
+			drawTool.removePointByPrimitive(options["type"]);
+			drawTool.removeModelPrimitiveByVoltage(35);
+			drawTool[options["type"]+"_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "line_110",name : "输电线110KV",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPtLineInfo!findGisPtLineInfoByVoltagelevel.action?voltagelevel=110",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool.drawPolylineByPrimitive(options["type"],{color:Cesium.Color.fromBytes(240,65,85,255),width:1},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitive(options["type"]);
+			drawTool.removeModelPrimitiveByVoltage(110);
+			drawTool[options["type"]+"_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "line_220",name : "输电线220KV",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPtLineInfo!findGisPtLineInfoByVoltagelevel.action?voltagelevel=220",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool.drawPolylineByPrimitive(options["type"],{color:Cesium.Color.fromBytes(128,0,128,255),width:1},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitive(options["type"]);
+			drawTool.removeModelPrimitiveByVoltage(220);
+			drawTool[options["type"]+"_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "line_500",name : "输电线500KV",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPtLineInfo!findGisPtLineInfoByVoltagelevel.action?voltagelevel=500",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool.drawPolylineByPrimitive(options["type"],{color:Cesium.Color.fromBytes(255,0,0,255),width:1.1},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitive(options["type"]);
+			drawTool.removeModelPrimitiveByVoltage(500);
+			drawTool[options["type"]+"_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "line_tgy",name : "特高压输电线",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("gisPtLineInfo!findGisPtLineInfoByWhereSql.action?wheresql=voltagelevel>500",function(data){
+				$("#loading").hide();
+				drawTool[options["type"]+"_data"]=data.list;
+				drawTool.drawPolylineByPrimitive(options["type"],{color:Cesium.Color.fromBytes(0,128,0,255),width:1.5},data.list);
+			});
+		},function(options){
+			drawTool.removePointByPrimitive(options["type"]);
+			drawTool.removeModelPrimitiveByVoltage("tgy");
+			drawTool[options["type"]+"_data"]=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "heatMap",name : "气象要素",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			heatMapTool.initHeat.apply(heatMapTool,[{type:"sun"}]);
+		},function(options){
+			$("#gradX").hide();
+			$("#type").hide();
+			heatMapTool.value=null;
+			heatMapTool.clearHeat();
+			heatMapTool.webgl_option=null;
+		}]);
+		map.addToolBar(deviceLayer,{type : "column",name : "柱状图",isCheckBox : true,callback : addBaseLayerButton},[function(options){
+			$("#loading").show();
+			$.get("sysProvinceCode!findByWhereSql.action?sql=LONGITUDE!=0",function(data){
+				$("#loading").hide();
+				drawTool.drawColumnByPrimitive(options["type"],null,data.list);
+			});
+			
+		},function(options){
+			drawTool.removePointByPrimitive(options["type"]);
+			drawTool.removePointByPrimitive(options["type"]+"_label");
+		}]);
+		map.addToolBar(document.getElementById("playToolBar"),{name:"播放设置",callback:function(container,options){
+			$("#playItem").dialog({
+				autoOpen : false,
+				position :{
+					my : "center",
+					at : "center",
+					of : "#cesiumContainer"
+				},
+				zIndex:20,
+				width:500,
+				height:400,
+				open:function(event,ui){
+					
+				},
+				buttons: [{
+	       	  		text: "确定",
+	       	  		icons: {
+	       		  		primary: "ui-icon-heart"
+	       	  		},
+	       	  		click: function() {
+		    			pack=$("#package").val();
+		    			alarm(pack);
+		    			var list=[];
+	        		  	$("#startTime option").each(function() {
+	        			  	list.push($(this).val());
+	        		  	});
+		    			timeList=list;
+		    			timelineTool.initOrUpdate(timeList[0],timeList[timeList.length-1]);
+		    			heatMapTool.initPackAndTimeList(pack,timeList);
+		    			drawTool.removePointByPrimitivetypes(["warn","warn_line"]);
+		    			$(this).dialog("close");
+	       	  		}
+		       	}]
+			});
+			return addToolBarToBottom(container,options.name,"playItem");
+		}},function(options,button){
+			$("#playItem").dialog("open");
+		});
+		map.addToolBar(document.getElementById("playToolBar"),{name:"上一个",callback:function(container,options){
+			return addToolBarToBottom(container,options.name,"prev");
+		}},function(){
+			heatMapTool.webgl_option && $("#loading").show();
+			if(heatMapTool.monitorDraw!=-1){
+				heatMapTool.stopHeat();
+				heatMapTool.monitorDraw=0;
+			}
+	 		heatMapTool.webgl_option && heatMapTool.prevHeat(function(monitorDraw){
+				if(monitorDraw!=-1){
+					heatMapTool.playFlag=true;
+					heatMapTool.dataFlag=true;
+					heatMapTool.playHeat(function(){
+					});
+				}
+			});
+		});
+		map.addToolBar(document.getElementById("playToolBar"),{name:"播放",callback:function(container,options){
+			return addToolBarToBottom(container,options.name,"play");
+		}},function(options,button){
+			var options;
+			var text=$(button).text();
+			if(text==" 播放"){
+				options={
+					label: "停止",
+					icons: {
+						primary: "ui-icon-pause"
+					}
+				};
+				heatMapTool.webgl_option && $("#loading").show();
+				heatMapTool.webgl_option && heatMapTool.playHeat(function(){
+				});
+			}else{
+				options={
+					label: "播放",
+					icons: {
+						primary: "ui-icon-play"
+					}
+				};
+				heatMapTool.stopHeat();
+				heatMapTool.webgl_option && heatMapTool.someHeat(heatMapTool.index,function(){
+					timelineTool.indexSetTime.apply(timelineTool,[heatMapTool.index]);
+				});
+			}
+			$(button).button( "option",options);
+		});
+		map.addToolBar(document.getElementById("playToolBar"),{name:"重置",callback:function(container,options){
+			return addToolBarToBottom(container,options.name,"reset");
+		}},function(){
+			heatMapTool.webgl_option && $("#loading").show();
+			if(heatMapTool.monitorDraw!=-1){
+				var options={
+						label: "播放",
+						icons: {
+							primary: "ui-icon-play"
+						}
+					};
+					$(".play").button( "option",options);
+					heatMapTool.webgl_option && heatMapTool.stopHeat();
+			}
+			heatMapTool.webgl_option && heatMapTool.someHeat(0,function(){
+				timelineTool.indexSetTime.apply(timelineTool,[0]);
+			});
+		});
+		map.addToolBar(document.getElementById("playToolBar"),{name:"下一个",callback:function(container,options){
+			return addToolBarToBottom(container,options.name,"next");
+		}},function(){
+			heatMapTool.webgl_option && $("#loading").show();
+			if(heatMapTool.monitorDraw!=-1){
+				heatMapTool.stopHeat();
+				heatMapTool.monitorDraw=0;
+			}
+			heatMapTool.webgl_option && heatMapTool.nextHeat(function(monitorDraw){
+				if(heatMapTool.monitorDraw!=-1){
+					heatMapTool.playFlag=true;
+					heatMapTool.dataFlag=true;
+					heatMapTool.playHeat(function(){
+					});
+				}
+			});
+		});
+	</script>
+</body>
+</html>
